@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { UploadCloud, FileText, FileAudio, X, Loader2, Lightbulb, CheckCircle, Wand2, AlertTriangle, RefreshCw, Settings2, ShieldCheck, Zap, Feather, Scale, Heartbeat } from 'lucide-react';
+import { UploadCloud, FileText, FileAudio, X, Loader2, Lightbulb, CheckCircle, Wand2, AlertTriangle, RefreshCw, Settings2, ShieldCheck, Zap, Feather, Scale, HeartPulse } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -95,7 +95,7 @@ const nonFunctionalIconMap: { [key: string]: React.ElementType } = {
     performance: Zap,
     usability: Feather,
     scalability: Scale,
-    reliability: Heartbeat,
+    reliability: HeartPulse,
     security: ShieldCheck,
     default: Settings2,
 };
