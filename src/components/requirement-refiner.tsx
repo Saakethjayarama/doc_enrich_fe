@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { UploadCloud, FileText, FileAudio, X, Loader2, Lightbulb, CheckCircle, Wand2, AlertTriangle, RefreshCw } from 'lucide-react';
+import { UploadCloud, FileText, FileAudio, X, Loader2, Lightbulb, CheckCircle, Wand2, AlertTriangle, RefreshCw, Settings2, ShieldCheck, Zap, TrendingUp, Users, Server, Feather, Scale, Heartbeat, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -20,12 +20,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from './ui/scroll-area';
+import { Badge } from './ui/badge';
 
 type Status = 'idle' | 'reading' | 'processing' | 'success' | 'error';
 
+type NonFunctionalRequirement = {
+  type: string;
+  description: string;
+};
+
 type RefineResult = {
-  functionalRequirements: string[];
-  nonFunctionalRequirements: string[];
+  enhanced_requirement_functional: string[];
+  enhanced_requirement_non_functional: NonFunctionalRequirement[];
   clarificationNeeded?: { field: string, reason: string }[];
   error?: string;
 };
@@ -77,6 +83,44 @@ const RequirementSection = ({ title, requirements, icon: Icon, emptyText }: { ti
                             <span>{req}</span>
                         </li>
                     ))}
+                </ul>
+            ) : (
+                <p className="text-muted-foreground">{emptyText}</p>
+            )}
+        </CardContent>
+    </Card>
+);
+
+const nonFunctionalIconMap: { [key: string]: React.ElementType } = {
+    performance: Zap,
+    usability: Feather,
+    scalability: Scale,
+    reliability: Heartbeat,
+    security: ShieldCheck,
+    default: Settings2,
+};
+
+const NonFunctionalRequirementSection = ({ title, requirements, icon: Icon, emptyText }: { title: string, requirements: NonFunctionalRequirement[], icon: React.ElementType, emptyText: string }) => (
+    <Card>
+        <CardHeader className="flex flex-row items-center gap-3">
+            <Icon className="w-6 h-6 text-primary" />
+            <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+            {requirements.length > 0 ? (
+                <ul className="space-y-4">
+                    {requirements.map((req, index) => {
+                        const NFIcon = nonFunctionalIconMap[req.type.toLowerCase()] || nonFunctionalIconMap.default;
+                        return (
+                          <li key={index} className="flex items-start gap-4">
+                              <NFIcon className="w-5 h-5 text-sky-600 mt-1 shrink-0" />
+                              <div className='flex-1'>
+                                <Badge variant="secondary" className="mb-2">{req.type}</Badge>
+                                <p>{req.description}</p>
+                              </div>
+                          </li>
+                        )
+                    })}
                 </ul>
             ) : (
                 <p className="text-muted-foreground">{emptyText}</p>
@@ -363,8 +407,8 @@ export function RequirementRefiner() {
                         </div>
                         <div className="space-y-4">
                             <ClarificationSection clarifications={result.clarificationNeeded} />
-                            <RequirementSection title="Functional Requirements" requirements={result.functionalRequirements || []} icon={Wand2} emptyText="No functional requirements were extracted." />
-                            <RequirementSection title="Non-Functional Requirements" requirements={result.nonFunctionalRequirements || []} icon={Wand2} emptyText="No non-functional requirements were extracted." />
+                            <RequirementSection title="Functional Requirements" requirements={result.enhanced_requirement_functional || []} icon={Wand2} emptyText="No functional requirements were extracted." />
+                            <NonFunctionalRequirementSection title="Non-Functional Requirements" requirements={result.enhanced_requirement_non_functional || []} icon={Settings2} emptyText="No non-functional requirements were extracted." />
                         </div>
                         <Button size="lg" className="w-full mt-6" onClick={handleReset}>
                             <RefreshCw className="mr-2 h-5 w-5" /> Start Over

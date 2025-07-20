@@ -2,16 +2,34 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 // This is a mock response. You can replace this with your actual backend logic.
 const mockResult = {
-    functionalRequirements: [
-        "User can log in with email and password.",
-        "User can view a dashboard with key metrics.",
-        "User can create a new project.",
-        "The system shall generate a PDF report of project status."
+    enhanced_requirement_functional: [
+        "The system shall provide a search bar that allows students to find courses by title, instructor, category, or keywords.",
+        "The system shall allow students to enroll in courses and track their progress through modules and lessons.",
+        "The system shall support various content formats, including video lectures (MP4), PDF documents, interactive quizzes (SCORM compliant), and discussion forums.",
+        "The system shall enable instructors to upload course materials, create assignments, and provide feedback to students.",
+        "The system shall generate certificates of completion for students who successfully finish a course."
     ],
-    nonFunctionalRequirements: [
-        "The application must be responsive and accessible on mobile devices.",
-        "Page load times should not exceed 2 seconds on a standard internet connection.",
-        "All sensitive user data must be encrypted at rest and in transit.",
+    enhanced_requirement_non_functional: [
+        {
+            "type": "Performance",
+            "description": "The system shall load course content pages within 2 seconds for up to 1000 concurrent users."
+        },
+        {
+            "type": "Usability",
+            "description": "The user interface shall be designed to be intuitive, enabling students to navigate to any course content within 3 clicks from the dashboard."
+        },
+        {
+            "type": "Scalability",
+            "description": "The system shall support up to 50,000 active student accounts and 1,000 concurrent instructors without performance degradation."
+        },
+        {
+            "type": "Reliability",
+            "description": "The system shall have an uptime of 99.9% excluding scheduled maintenance."
+        },
+        {
+            "type": "Security",
+            "description": "The system shall encrypt all sensitive user data, including personal information and payment details, using AES-256 encryption."
+        }
     ],
     clarificationNeeded: [
         { field: "User Authentication", reason: "The document mentions 'user login' but doesn't specify authentication methods like OAuth (Google, GitHub) or only email/password." },
