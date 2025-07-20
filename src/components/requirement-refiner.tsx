@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { UploadCloud, FileText, FileAudio, X, Loader2, Lightbulb, CheckCircle, Wand2, AlertTriangle, RefreshCw, Settings2, ShieldCheck, Zap, TrendingUp, Users, Server, Feather, Scale, Heartbeat, Shield } from 'lucide-react';
+import { UploadCloud, FileText, FileAudio, X, Loader2, Lightbulb, CheckCircle, Wand2, AlertTriangle, RefreshCw, Settings2, ShieldCheck, Zap, Feather, Scale, Heartbeat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
