@@ -49,33 +49,7 @@ const mockClarificationSuggestions = [
     "Define the exact data points that need to be included in the monthly report.",
 ];
 
-const mockResult: RefineResult = {
-    functionalRequirements: [
-        "User can log in with email and password.",
-        "User can view a dashboard with key metrics.",
-        "User can create a new project.",
-        "The system shall generate a PDF report of project status."
-    ],
-    nonFunctionalRequirements: [
-        "The application must be responsive and accessible on mobile devices.",
-        "Page load times should not exceed 2 seconds on a standard internet connection.",
-        "All sensitive user data must be encrypted at rest and in transit.",
-    ],
-    clarificationNeeded: [
-        { field: "User Authentication", reason: "The document mentions 'user login' but doesn't specify authentication methods like OAuth (Google, GitHub) or only email/password." },
-        { field: "Reporting Feature", reason: "The requirements state 'generate reports' but do not specify the format (PDF, CSV, etc.) or the data to be included." }
-    ]
-};
-
-const refineRequirementsAction = async (input: { files: { name: string, dataUri: string }[] }): Promise<RefineResult> => {
-  console.log('Mock refineRequirementsAction called with:', input);
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(mockResult);
-    }, 2000); // Simulate network delay
-  });
-};
-
+// This function is kept for the clarification suggester, which is a separate feature.
 const suggestClarificationAction = async (input: { requirements: string }): Promise<{ clarificationSuggestions: string[], error?: string }> => {
   console.log('Mock suggestClarificationAction called with:', input);
   return new Promise(resolve => {
@@ -258,10 +232,19 @@ export function RequirementRefiner() {
             );
 
             setStatus('processing');
-            const response = await refineRequirementsAction({ files: fileData });
+            
+            const apiResponse = await fetch('/api/refine', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ files: fileData }),
+            });
 
-            if (response.error) {
-                throw new Error(response.error);
+            const response = await apiResponse.json();
+
+            if (!apiResponse.ok || response.error) {
+                throw new Error(response.error || 'An error occurred at the backend.');
             }
             
             setResult(response);
