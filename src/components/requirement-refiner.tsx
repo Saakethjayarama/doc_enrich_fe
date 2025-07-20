@@ -1,13 +1,12 @@
 
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { UploadCloud, FileText, FileAudio, X, Loader2, Lightbulb, CheckCircle, Wand2, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { refineRequirementsAction, suggestClarificationAction, RefineResult } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog,
@@ -24,6 +23,13 @@ import { ScrollArea } from './ui/scroll-area';
 
 type Status = 'idle' | 'reading' | 'processing' | 'success' | 'error';
 
+type RefineResult = {
+  functionalRequirements: string[];
+  nonFunctionalRequirements: string[];
+  clarificationNeeded?: { field: string, reason: string }[];
+  error?: string;
+};
+
 const allowedFileTypes = {
     'application/pdf': ['.pdf'],
     'application/msword': ['.doc'],
@@ -33,6 +39,52 @@ const allowedFileTypes = {
     'audio/x-m4a': ['.m4a'],
     'audio/m4a': ['.m4a'],
 };
+
+// --- Mock Data and Functions ---
+
+const mockClarificationSuggestions = [
+    "Could you specify the target user roles (e.g., admin, guest, authenticated user)?",
+    "What are the expected peak and average load times for the system?",
+    "Which specific payment gateways should be integrated?",
+    "Define the exact data points that need to be included in the monthly report.",
+];
+
+const mockResult: RefineResult = {
+    functionalRequirements: [
+        "User can log in with email and password.",
+        "User can view a dashboard with key metrics.",
+        "User can create a new project.",
+        "The system shall generate a PDF report of project status."
+    ],
+    nonFunctionalRequirements: [
+        "The application must be responsive and accessible on mobile devices.",
+        "Page load times should not exceed 2 seconds on a standard internet connection.",
+        "All sensitive user data must be encrypted at rest and in transit.",
+    ],
+    clarificationNeeded: [
+        { field: "User Authentication", reason: "The document mentions 'user login' but doesn't specify authentication methods like OAuth (Google, GitHub) or only email/password." },
+        { field: "Reporting Feature", reason: "The requirements state 'generate reports' but do not specify the format (PDF, CSV, etc.) or the data to be included." }
+    ]
+};
+
+const refineRequirementsAction = async (input: { files: { name: string, dataUri: string }[] }): Promise<RefineResult> => {
+  console.log('Mock refineRequirementsAction called with:', input);
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(mockResult);
+    }, 2000); // Simulate network delay
+  });
+};
+
+const suggestClarificationAction = async (input: { requirements: string }): Promise<{ clarificationSuggestions: string[], error?: string }> => {
+  console.log('Mock suggestClarificationAction called with:', input);
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve({ clarificationSuggestions: mockClarificationSuggestions });
+    }, 1000); // Simulate network delay
+  });
+};
+
 
 // --- Helper Components ---
 
@@ -63,8 +115,11 @@ const ClarificationSuggester = ({ requirement }: { requirement: string }) => {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     const handleSuggest = async () => {
+        if (suggestions.length > 0) return; // Don't re-fetch if already loaded
+
         setIsLoading(true);
         setError(null);
         const result = await suggestClarificationAction({ requirements: requirement });
@@ -75,11 +130,19 @@ const ClarificationSuggester = ({ requirement }: { requirement: string }) => {
         }
         setIsLoading(false);
     };
+    
+    // We use useEffect to fetch suggestions when the dialog is opened
+    // to avoid sending a request for every item in the list upfront.
+    useEffect(() => {
+        if(isOpen) {
+            handleSuggest();
+        }
+    }, [isOpen]);
 
     return (
-        <AlertDialog>
+        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" onClick={handleSuggest} className="text-primary hover:text-primary">
+                <Button variant="ghost" size="sm" className="text-primary hover:text-primary">
                     <Wand2 className="mr-2 h-4 w-4" />
                     Suggest Clarifications
                 </Button>

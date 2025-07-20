@@ -13,14 +13,14 @@ export default function Home() {
             Requirement Refiner
           </h1>
           <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-            Turn your vague ideas into actionable requirements. Upload your documents, notes, or audio files, and let our AI assistant extract and structure them for you.
+            Turn your vague ideas into actionable requirements. Upload your documents, notes, or audio files, and see the extracted and structured results.
           </p>
         </header>
         <main>
           <RequirementRefiner />
         </main>
         <footer className="text-center mt-12">
-            <p className="text-sm text-muted-foreground">Powered by Genkit and Firebase</p>
+            <p className="text-sm text-muted-foreground">Powered by Firebase</p>
         </footer>
       </div>
     </div>
